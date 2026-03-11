@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Generate QR</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+
+<h2>Generate Attendance QR</h2>
+
+<button onclick="generateQR()">Generate QR</button>
+
+<br><br>
+
+<canvas id="qrcode"></canvas>
+
+<script>
+async function generateQR() {
+    const res = await fetch("http://localhost:5000/generate-qr");
+    const data = await res.json();
+
+    const qrToken = data.token;
+
+    QRCode.toCanvas(document.getElementById('qrcode'), qrToken);
+}
+</script>
+
+</body>
+</html>

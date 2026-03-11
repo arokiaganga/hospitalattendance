@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Attendance Dashboard</title>
+
+<style>
+
+body{
+font-family: Arial;
+background:#f5f5f5;
+padding:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#2c7be5;
+color:white;
+}
+
+h2{
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Hospital Staff Attendance</h2>
+
+<table id="attendanceTable">
+
+<thead>
+<tr>
+<th>Staff Name</th>
+<th>Phone</th>
+<th>Shift</th>
+<th>Check Time</th>
+<th>Entry / Exit</th>
+<th>Method</th>
+</tr>
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+<script>
+
+async function loadAttendance(){
+
+const res = await fetch("http://localhost:5000/attendance-report");
+
+const data = await res.json();
+
+let table = document.querySelector("#attendanceTable tbody");
+
+table.innerHTML="";
+
+data.forEach(row=>{
+
+let tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${row.staff_name}</td>
+<td>${row.phone}</td>
+<td>${row.shift}</td>
+<td>${new Date(row.check_time).toLocaleString()}</td>
+<td>${row.type}</td>
+<td>${row.method}</td>
+`;
+
+table.appendChild(tr);
+
+});
+
+}
+
+loadAttendance();
+
+// auto refresh every 10 seconds
+setInterval(loadAttendance,10000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hospital Attendance QR</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+
+<body>
+
+<h2>Hospital Staff Attendance</h2>
+
+<canvas id="qr"></canvas>
+
+<h1 id="code"></h1>
+
+<script>
+
+async function loadQR(){
+
+const res = await fetch("http://localhost:5000/generate-qr");
+const data = await res.json();
+
+QRCode.toCanvas(document.getElementById("qr"), data.token);
+
+document.getElementById("code").innerText =
+"Attendance Code: " + data.code;
+
+}
+
+setInterval(loadQR,60000);
+loadQR();
+
+</script>
+
+</body>
+</html>

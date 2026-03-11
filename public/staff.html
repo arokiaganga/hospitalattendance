@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"> 
+<title>Staff Attendance</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c7be5">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+</head>
+
+<body>
+
+<h2>Staff Login</h2>
+
+<input id="phone" placeholder="Phone number">
+<br><br>
+
+<input id="password" type="password" placeholder="Password">
+<br><br>
+
+<button onclick="login()">Login</button>
+
+<p id="loginMsg"></p>
+
+<hr>
+
+<div id="attendanceSection" style="display:none">
+
+<h3>Scan QR for Attendance</h3>
+
+<div id="reader"></div>
+
+<br><br>
+
+<h3>OR Enter Attendance Code</h3>
+
+<input id="attendanceCode" placeholder="Enter Code">
+
+<button onclick="markCode()">Submit Code</button>
+
+</div>
+
+<br>
+
+<p id="result"></p>
+
+<script>
+
+let token="";
+let scannerStarted=false;
+
+async function login(){
+
+const phone=document.getElementById("phone").value;
+const password=document.getElementById("password").value;
+
+const res=await fetch("/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+phone:phone,
+password:password,
+device_id:"PHONE1"
+})
+});
+
+const data=await res.json();
+
+if(data.token){
+
+token=data.token;
+
+document.getElementById("loginMsg").innerText="Login Success";
+
+document.getElementById("attendanceSection").style.display="block";
+
+if(!scannerStarted){
+startScanner();
+scannerStarted=true;
+}
+
+}
+else{
+
+document.getElementById("loginMsg").innerText="Login Failed";
+
+}
+
+}
+
+function startScanner(){
+
+const html5QrcodeScanner = new Html5QrcodeScanner(
+"reader",
+{
+fps:10,
+qrbox:250
+}
+);
+
+html5QrcodeScanner.render(onScanSuccess);
+
+}
+
+function onScanSuccess(decodedText){
+
+markAttendance(decodedText);
+
+}
+
+async function markAttendance(qrToken){
+
+const res=await fetch("/scan",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+token
+},
+body:JSON.stringify({
+token:qrToken,
+type:"ENTRY"
+})
+});
+
+const msg=await res.text();
+
+document.getElementById("result").innerText=msg;
+
+}
+
+async function markCode(){
+
+const code=document.getElementById("attendanceCode").value;
+
+const res=await fetch("/attendance-code",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+token
+},
+body:JSON.stringify({
+code:code
+})
+});
+
+const msg=await res.text();
+
+document.getElementById("result").innerText=msg;
+
+}
+
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js")
+  .then(() => console.log("Service Worker Registered"));
+}
+
+
+</script>
+
+</body>
+</html>
