@@ -14,10 +14,13 @@ app.use(express.static("public"));
 const SECRET = "MY_SUPER_SECRET";
 
 const db = mysql.createPool({
-    host: "localhost",
+    host: "mysql.railway.internal",
     user: "root",
-    password: "Hospital@123",
-    database: "hospital"
+    password: "BuMqsXsdbiSMyGskuERjKENRSKbKDGdJ",
+    database: "railway",
+    port: 3306,
+    waitForConnections: true,
+    connectionLimit: 10
 });
 
 app.get("/create-user", async (req, res) => {
