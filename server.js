@@ -14,7 +14,7 @@ app.use(express.static("public"));
 const SECRET = "MY_SUPER_SECRET";
 
 const db = mysql.createPool({
-    host: "containers-us-west-mysql.railway.internal.railway.app",
+    host: "mysql-production-4775.up.railway.app",
     user: "root",
     password: "BuMqsXsdbiSMyGskuERjKENRSKbKDGdJ",
     database: "railway",
